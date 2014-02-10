@@ -2,20 +2,19 @@
 define([
     'backbone',
     'dust',
-    'collections/posts',
+    'models/blog',
     'views/blog',
-    'tmpl!themes/base/base'], function(Backbone, dust, Posts, BlogView) {
+    'tmpl!themeBase/container'
+], function(Backbone, dust, Blog, BlogView) {
     return Backbone.Router.extend({
         'routes': {
             '*path': 'default'
         },
         'default': function(path) {
-            var posts = new Posts();
-            var blogView = new BlogView({
-                collection: posts,
-                el: '.liveblog'
-            });
-            posts.fetch();
+            var blog = new Blog();
+            var blogView = new BlogView({ model: blog, el: 'body' });
+            blog.get('publishedPosts').fetch();
+            blogView.render();
         }
     });
 });
