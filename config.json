@@ -11,8 +11,8 @@
         "build": "build"
     },
     "rest": {
-        "hostname": "localhost",
-        "port": 8080,
+        "hostname": "rp.sd-demo.sourcefabric.org",
+        "port": "80",
         "protocol": "http://",
         "theme": "default",
         "id": 1,

@@ -14,7 +14,6 @@ define(['backboneCustom', 'core/gettext'], function(Backbone, gt){
                 urlPre = liveblog.host + '/resources/Admin/Plugin/' + name + '/JSONLocale/' + liveblog.language,
                 urlCached = req.toUrl(urlPreCached),
                 url = req.toUrl(urlPre);
-
             // Use the same options for the internationalization ajax request
             //     url key need to be supplied in options
             //     error key need to be supplied in options
