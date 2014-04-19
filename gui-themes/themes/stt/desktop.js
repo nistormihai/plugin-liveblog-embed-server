@@ -8,6 +8,7 @@ define([
     'plugins/post-hash',
     'plugins/permanent-link',
     'plugins/social-share',
+    'plugins/user-comments',
     'tmpl!theme/container',
     'tmpl!theme/item/base'
 ], function() {
