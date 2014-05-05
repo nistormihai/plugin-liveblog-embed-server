@@ -1,12 +1,13 @@
-/* global requirejs */
 'use strict';
 
 define([
+    'require-global',
     'module',
     'underscore',
     'plugins',
     'lib/utils'
-], function(module, _, plugins, utils) {
+], function(requirejs, module, _, plugins, utils) {
+    // requirejs = liveblog.require ? liveblog.require: require;
     var undefineTheme = function() {
         requirejs.undef('theme');
         requirejs.undef('themeFile');
@@ -27,7 +28,7 @@ define([
         liveblog.theme = liveblog.theme ? liveblog.theme : config.theme;
         liveblog.language = liveblog.language ? liveblog.language : config.language;
         // Set the path for theme template files and theme config file
-        require.config({
+        requirejs.config({
             paths: {
                 theme: module.config().themesPath + liveblog.theme,
                 themeFile: module.config().themesPath + liveblog.theme

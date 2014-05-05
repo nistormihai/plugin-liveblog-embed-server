@@ -143,7 +143,7 @@ define(['lib/utils', 'plugins/css', 'backbone'], function(utils, pluginCss, Back
             onload();
         }
         if (utils.isClient) {
-            var fixPath = configCss.url,
+            var fixPath = liveblog.paths.css,
                 cssUrl, loaded;
             // remove last / because req.toUrl it will add it at begining.
             fixPath = (fixPath[fixPath.length - 1] === '/') ?

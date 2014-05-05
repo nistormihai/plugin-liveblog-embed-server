@@ -1,12 +1,8 @@
 'use strict';
 require.config({
-    baseUrl: liveblog.baseUrl,
     config: {
         'load-theme': {
             themesPath:             '../../themes/'
-        },
-        css: {
-            url: liveblog.paths.css
         }
     },
     paths: {

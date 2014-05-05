@@ -1,6 +1,7 @@
 /* jshint maxparams: 6 */
 'use strict';
-
+// @TODO: remove this when build will be only namespaced.
+// var require;
 liveblog.require = {};
 var merge = function(obj, source) {
     if (typeof source !== 'object') {
@@ -79,11 +80,11 @@ liveblog.servers.rest = liveblog.browserUrl(liveblog.servers.rest);
 liveblog.baseUrl = liveblog.require.baseUrl = liveblog.servers.frontend + liveblog.paths.scripts;
 
 var loadMain = function() {
+    // require = liveblog.require;
     if (liveblog.dev && !liveblog.emulateprod) {
         /*jshint unused:false*/
         // set the require object for development mode.
-        var require = liveblog.require;
-        liveblog.loadJs('node_modules/requirejs/require').setAttribute('data-main', liveblog.baseUrl + 'main');
+        liveblog.loadJs('node_modules/requirejs/require').setAttribute('data-main', liveblog.baseUrl + 'main.js');
     } else {
         // if is the production then object liveblog.require was already setup.
         liveblog.loadJs('build/main.min');
