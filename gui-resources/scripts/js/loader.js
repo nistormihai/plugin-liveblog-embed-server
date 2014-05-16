@@ -78,16 +78,16 @@ liveblog.servers.rest = liveblog.browserUrl(liveblog.servers.rest);
 
 // after aditional properties where added remake the baseUrl for loader and require.
 liveblog.baseUrl = liveblog.require.baseUrl = liveblog.servers.frontend + liveblog.paths.scripts;
-
+liveblog.min = !liveblog.dev || liveblog.emulateprod;
 var loadMain = function() {
     // require = liveblog.require;
-    if (liveblog.dev && !liveblog.emulateprod) {
+    if (liveblog.min) {
+        // if is the production then object liveblog.require was already setup.
+        liveblog.loadJs('build/main.min');
+    } else {
         /*jshint unused:false*/
         // set the require object for development mode.
         liveblog.loadJs('node_modules/requirejs/require').setAttribute('data-main', liveblog.baseUrl + 'main.js');
-    } else {
-        // if is the production then object liveblog.require was already setup.
-        liveblog.loadJs('build/main.min');
     }
 };
 // this is the callback after the version was loaded.

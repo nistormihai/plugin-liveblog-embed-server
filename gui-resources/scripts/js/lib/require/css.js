@@ -12,7 +12,7 @@ define(['lib/utils', 'plugins/css', 'backbone'], function(utils, pluginCss, Back
         return normalize(name);
     };
 
-    cssAPI.pluginBuilder = './css-builder';
+    cssAPI.pluginBuilder = 'lib/require/css-builder';
 
     if (utils.isClient) {
 

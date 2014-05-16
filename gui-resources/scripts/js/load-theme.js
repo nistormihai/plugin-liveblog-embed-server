@@ -23,15 +23,16 @@ define([
                 fn(config);
             });
             callback();
-        };
+        },
+        themesPath = liveblog.min ? module.config().buildPath : module.config().themesPath;
         // Set liveblog theme
         liveblog.theme = liveblog.theme ? liveblog.theme : config.theme;
         liveblog.language = liveblog.language ? liveblog.language : config.language;
         // Set the path for theme template files and theme config file
         requirejs.config({
             paths: {
-                theme: module.config().themesPath + liveblog.theme,
-                themeFile: module.config().themesPath + liveblog.theme
+                theme:  themesPath + liveblog.theme,
+                themeFile: themesPath + liveblog.theme
             }
         });
         // Load (apply) theme config
@@ -53,8 +54,8 @@ define([
                 undefineTheme();
                 requirejs.config({
                     paths: {
-                        theme: module.config().themesPath + liveblog.theme + '/' + liveblog.environment,
-                        themeFile: module.config().themesPath + liveblog.theme + '/' + liveblog.environment
+                        theme: themesPath + liveblog.theme + '/' + liveblog.environment,
+                        themeFile: themesPath + liveblog.theme + '/' + liveblog.environment
                     }
                 });
                 requirejs(['themeFile'], function() {

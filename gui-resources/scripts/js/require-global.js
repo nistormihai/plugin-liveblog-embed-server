@@ -1,7 +1,5 @@
 'use strict';
 
-define(function() {
-    // get the running require global object.
-    console.log(liveblog.require);
-    return liveblog.require ? liveblog.require : require;
+define(['underscore'], function(_) {
+    return _.isFunction(liveblog.require) ? liveblog.require : require;
 });
