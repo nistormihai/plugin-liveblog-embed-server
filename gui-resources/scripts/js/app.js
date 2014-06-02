@@ -52,6 +52,7 @@ fs.exists(config.paths.logs, function(exists) {
 
 requirejs.config({
     baseUrl: __dirname,
+    urlArgs: 'hello=there',
     config: {
         'load-theme': {
             themesPath: path.join(__dirname, config.paths.themes)

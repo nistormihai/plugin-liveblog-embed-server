@@ -58,12 +58,21 @@ define([
         var request = require.nodeRequire('request'),
            qs = require.nodeRequire('qs');
 
-        // Parse response to json
-        options.json = true;
-        options.timeout = 1000;
+        _.defaults(options, {
+            timeout: 1000,
+            dataType: 'json',
+            type: 'GET'
+        });
+        options.dataType = options.dataType.toLowerCase();
+        options.method = options.type.toUpperCase();
+        delete options.type;
+        if (options.dataType === 'json') {
+            // Parse response to json
+            options.json = true;
+        }
 
         // Set the query string with the options.data params
-        if (options.data) {
+        if (options.method === 'GET' && options.data) {
             options.url += ((options.url.indexOf('?') === -1) ? '?': '') + qs.stringify(options.data);
             delete options.data;
         }
@@ -72,8 +81,11 @@ define([
             liveblogLogger.info('Request to url: %s', options.url);
         }
         // Use options.success and options.errors callbacks
-        request.get(options, function(error, response, data) {
+        request(options, function(error, response, data) {
             if (!error && response.statusCode === 200) {
+                if (options.dataType === 'jsonp') {
+                    data = JSON.parse(data);
+                }
                 if (options.success) {
                     return options.success(data);
                 }
