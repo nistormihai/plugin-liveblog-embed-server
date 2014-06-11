@@ -17,6 +17,11 @@ module.exports = function(grunt) {
     }
     config.pkg = grunt.file.readJSON('./package.json');
 
+    // make this into a grunt plugin.
+    //    parse a object { protocol: 'http:', hostname: 'localhost', port: 8080} into a string.
+    var urlHref = require('./gui-resources/scripts/js/lib/nodejs/url-href'),
+        serversNodejs = config.servers.nodejs;
+    config.servers.nodejs = urlHref.serverUrl(serversNodejs);
     // Load the basic configuration and additional from tasks/options
     require('load-grunt-config')(grunt, {
         config: config,
@@ -31,11 +36,14 @@ module.exports = function(grunt) {
         // load lodash for merging method
             _ = require('lodash');
         // deep extend or aka lodash merge the current config over sample.
+        var strServersNodejs = config.servers.nodejs;
+        config.servers.nodejs = serversNodejs;
         configuration = _.merge(configuration, config);
         // we don't need pkg from the current config.
         delete configuration.pkg;
         // write file with some beautifications.
         grunt.file.write('./config.json', JSON.stringify(configuration, null, 4));
+        config.servers.nodejs = strServersNodejs;
     });
 
     grunt.registerTask('create-folders', 'Create needed folders', function() {
