@@ -4,8 +4,9 @@ define([
     'lib/require-global',
     'module',
     'underscore',
-    'lib/utils'
-], function(requirejs, module, _, utils) {
+    'lib/utils',
+    'all-plugins'
+], function(requirejs, module, _, utils, plugins) {
     var undefineTheme = function() {
         requirejs.undef('theme');
         requirejs.undef('themeFile');
@@ -16,9 +17,21 @@ define([
     return function(config, callback) {
         config = config || {theme: 'default'};
         callback = callback || function() {};
-        var loadPlugins = function(plugins) {
-            _.each(plugins, function(fn, key) {
-                fn(config);
+        var loadPlugins = function(themePlugins) {
+            var appliedPlugins = {},
+                applyPlugin = function(plugin) {
+                    if (!_.has(appliedPlugins, plugin) && _.has(plugins, plugin)) {
+                        appliedPlugins[plugin] = true;
+                        plugins[plugin].init(config, liveblog);
+                    }
+                };
+            _.each(themePlugins, function(plugin) {
+                if (_.has(plugin, 'deps')) {
+                    _.each(plugin.deps, function(dep) {
+                        applyPlugin(dep);
+                    });
+                }
+                applyPlugin(plugin);
             });
             callback();
         },
@@ -49,11 +62,10 @@ define([
         // Load (apply) theme config
         undefineTheme();
         require([
-            'plugins',
             'themeFile',
             'lib/helpers/find-environment',
             'i18n!livedesk_embed'
-        ], function(plugins, theme, findEnvironment) {
+        ], function(theme, findEnvironment) {
             // If the theme has different environments reset the
             //  path to theme template files and theme config file to use
             //  the ones for the selected environment
@@ -70,14 +82,14 @@ define([
                         themeFile: themesPath([liveblog.theme, liveblog.environment])
                     }
                 });
-                requirejs(['plugins', 'themeFile'], function(plugins, theme) {
-                    loadPlugins(plugins);
+                requirejs(['themeFile'], function(theme) {
+                    loadPlugins(theme.plugins);
                 }, function(err) {
                     undefineTheme();
                     utils.dispatcher.trigger('sub-theme-file.request-failed');
                 });
             } else {
-                loadPlugins(plugins);
+                loadPlugins(theme.plugins);
             }
         }, function(err) {
             undefineTheme();
