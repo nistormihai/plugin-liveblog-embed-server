@@ -16,7 +16,8 @@ define([
     return BaseView.extend({
 
         initialize: function() {
-            var self = this;
+            var self = this,
+                liveblog = this.liveblog;
 
             utils.dispatcher.trigger('initialize.layout-view', this);
 

@@ -163,7 +163,7 @@ app.get('/', function(req, res) {
                     res.send(400, 'Request for theme file has failed.');
                 }
             });
-            var layout = new Layout();
+            var layout = new Layout({liveblog: liveblog});
             layout.blogModel.get('publishedPosts').on('sync', function() {
                 if (!sent) {
                     sent = true;
