@@ -3,8 +3,9 @@
 
 define([
     'backbone',
-    'underscore'
-], function(Backbone, _) {
+    'underscore',
+    'lib/utils'
+], function(Backbone, _, utils) {
 
     Backbone.defaultSync = Backbone.sync;
 
@@ -45,12 +46,6 @@ define([
 
     Backbone.ajax = function(options) {
 
-        if (typeof process !== 'undefined' &&
-                process.versions &&
-                !!process.versions.node) {
-            return Backbone.nodeSync(options);
-        }
-
         // send the old headers if liveblog.emulateOLDHEADERS
         if (liveblog.emulateOLDHEADERS) {
             options.dataType = 'json';
@@ -63,38 +58,56 @@ define([
             options.data = _.extend(options.data, options.headers);
             delete options.headers;
         }
+
+        if (utils.isServer) {
+            return Backbone.nodeAjax(options);
+        }
+
         return Backbone.defaultAjax(options);
     };
 
-    Backbone.nodeSync = function(options) {
-
-        var request = require.nodeRequire('request'),
-           qs = require.nodeRequire('qs');
-
-        // Parse response to json
-        options.json = true;
-        options.timeout = 1000;
-
-        // Set the query string with the options.data params
-        if (options.data) {
-            options.url += ((options.url.indexOf('?') === -1) ? '?': '&') + qs.stringify(options.data);
-            delete options.data;
-        }
-
+    Backbone.nodeAjax = function(options) {
+        // log the requested url
         if (GLOBAL && GLOBAL.liveblogLogger) {
             liveblogLogger.info('Request to url: %s', options.url);
         }
+
+        var request = require.nodeRequire('request'),
+            $ = require.nodeRequire('jquery-deferred');
+        var dfd = new $.Deferred();
+        // json is default if no dataType option is set.
+        if (!options.dataType || options.dataType === 'json') {
+            options.json = true;
+        }
+        // timeout of 2sec per request, not to occupy resources.
+        options.timeout = 2000;
+
+        // Set the query string with the options.data params
+        if ((!options.type || options.type === 'GET') && options.data) {
+            options.qs = options.data;
+            delete options.data;
+        }
+
+        // set the method from options.type if not set default GET.
+        options.method = options.type ? options.type: 'GET';
+        delete options.type;
+
         // Use options.success and options.errors callbacks
-        request.get(options, function(error, response, data) {
+        request(options, function(error, response, data) {
             if (!error && response.statusCode === 200) {
+                dfd.resolve(data);
                 if (options.success) {
                     return options.success(data);
                 }
-            } else if (options.error && _.has(response, 'request')) {
+            } else {
+                dfd.reject(error);
+            }
+            if (options.error && _.has(response, 'request')) {
                 liveblogLogger.error('Request to url: %s failed with code: %s and body: ', response.request.href, response.statusCode, response.body);
                 return options.error(response);
             }
         });
+        return dfd.promise();
     };
 
     return Backbone;

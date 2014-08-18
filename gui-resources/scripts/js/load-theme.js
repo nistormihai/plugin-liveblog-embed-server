@@ -22,17 +22,13 @@ define([
                 applyPlugin = function(plugin) {
                     if (!_.has(appliedPlugins, plugin) && _.has(plugins, plugin)) {
                         appliedPlugins[plugin] = true;
+                        if (_.has(plugins[plugin], 'deps')) {
+                            _.each(plugins[plugin].deps, applyPlugin);
+                        }
                         plugins[plugin].init(config, liveblog);
                     }
                 };
-            _.each(themePlugins, function(plugin) {
-                if (_.has(plugin, 'deps')) {
-                    _.each(plugin.deps, function(dep) {
-                        applyPlugin(dep);
-                    });
-                }
-                applyPlugin(plugin);
-            });
+            _.each(themePlugins, applyPlugin);
             callback();
         },
         themesPathed = (liveblog.min ? module.config().buildPath : module.config().themesPath),
